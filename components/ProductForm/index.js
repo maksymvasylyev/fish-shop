@@ -1,12 +1,41 @@
 import { StyledForm, StyledHeading, StyledLabel } from "./ProductForm.styled";
 import { StyledButton } from "../Button/Button.styled";
+import useSWRMutation from "swr/mutation";
+
+async function sendRequest(url, { arg }) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(arg), // arg === jokeData
+  });
+
+  // const { status } = await response.json();
+  // console.log(status);
+}
 
 export default function ProductForm() {
+  const { trigger } = useSWRMutation("/api/products", sendRequest);
+
   async function handleSubmit(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
     const productData = Object.fromEntries(formData);
+
+    // const response = await fetch("api/products", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(productData),
+    // });
+
+    // const data = await response.json();
+
+    await trigger(productData);
+    event.target.reset();
   }
 
   return (
